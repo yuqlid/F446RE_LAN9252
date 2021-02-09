@@ -139,12 +139,23 @@ C_INCLUDES =  \
 -IMiddlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS_V2 \
 -IMiddlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM4F
 
+# float option
+# -Wfloat-conversion			doubleからfloatへ暗黙の型変換が発生したときに警告
+# -Wunsuffixed-float-constants	浮動小数点の定数に型を示すサフィックスがないことを警告
+# -Wdouble-promotion			内部演算でflaotからdoubleへ暗黙の型変換が発生したときに警告
+# -fsingle-precision-constant	浮動小数点の計算は全て単精度（float）で実施
 
+FLOAT-OPT += -Wfloat-conversion
+FLOAT-OPT += -Wunsuffixed-float-constants
+FLOAT-OPT += -Wdouble-promotion
+#FLOAT-OPT += -fsingle-precision-constant
 
 # compile gcc flags
-ASFLAGS = $(MCU) $(AS_DEFS) $(AS_INCLUDES) $(OPT) -Wall -fdata-sections -ffunction-sections
+ASFLAGS = $(MCU) $(AS_DEFS) $(AS_INCLUDES) $(OPT) -Wall -fdata-sections -ffunction-sections $(FLOAT-OPT)
 
-CFLAGS = $(MCU) $(C_DEFS) $(C_INCLUDES) $(OPT) -Wall -fdata-sections -ffunction-sections
+CFLAGS = $(MCU) $(C_DEFS) $(C_INCLUDES) $(OPT) -Wall -fdata-sections -ffunction-sections -std=gnu11 $(FLOAT-OPT)
+
+CCACHE := $(shell which ccache)
 
 ifeq ($(DEBUG), 1)
 CFLAGS += -g -gdwarf-2
@@ -164,7 +175,7 @@ LDSCRIPT = STM32F446RETx_FLASH.ld
 # libraries
 LIBS = -lc -lm -lnosys 
 LIBDIR = 
-LDFLAGS = $(MCU) -specs=nano.specs -T$(LDSCRIPT) $(LIBDIR) $(LIBS) -Wl,-Map=$(BUILD_DIR)/$(TARGET).map,--cref -Wl,--gc-sections
+LDFLAGS = $(MCU) -specs=nano.specs -T$(LDSCRIPT) $(LIBDIR) $(LIBS) -Wl,-Map=$(BUILD_DIR)/$(TARGET).map,--cref -Wl,--gc-sections,-print-memory-usage
 
 # default action: build all
 all: $(BUILD_DIR)/$(TARGET).elf $(BUILD_DIR)/$(TARGET).hex $(BUILD_DIR)/$(TARGET).bin
@@ -181,13 +192,13 @@ OBJECTS += $(addprefix $(BUILD_DIR)/,$(notdir $(ASM_SOURCES:.s=.o)))
 vpath %.s $(sort $(dir $(ASM_SOURCES)))
 
 $(BUILD_DIR)/%.o: %.c Makefile | $(BUILD_DIR) 
-	$(CC) -c $(CFLAGS) -Wa,-a,-ad,-alms=$(BUILD_DIR)/$(notdir $(<:.c=.lst)) $< -o $@
+	$(CCACHE) $(CC) -c $(CFLAGS) -Wa,-a,-ad,-alms=$(BUILD_DIR)/$(notdir $(<:.c=.lst)) $< -o $@
 
 $(BUILD_DIR)/%.o: %.s Makefile | $(BUILD_DIR)
-	$(AS) -c $(CFLAGS) $< -o $@
+	$(CCACHE) $(AS) -c $(CFLAGS) $< -o $@
 
 $(BUILD_DIR)/$(TARGET).elf: $(OBJECTS) Makefile
-	$(CC) $(OBJECTS) $(LDFLAGS) -o $@
+	$(CCACHE) $(CC) $(OBJECTS) $(LDFLAGS) -o $@
 	$(SZ) $@
 
 $(BUILD_DIR)/%.hex: $(BUILD_DIR)/%.elf | $(BUILD_DIR)
@@ -198,6 +209,19 @@ $(BUILD_DIR)/%.bin: $(BUILD_DIR)/%.elf | $(BUILD_DIR)
 	
 $(BUILD_DIR):
 	mkdir $@		
+
+#######################################
+# Program OpenOCD
+#######################################
+upload_open: build/$(TARGET).bin
+	openocd -f board/st_nucleo_f4.cfg -c "reset_config trst_only combined" -c "program build/$(TARGET).elf verify reset exit"
+
+#######################################
+# Program J-Link
+#######################################
+upload_jlink: build/$(TARGET).bin
+	JLink -device STM32F446RE -if SWD -speed 4000 -autoconnect 1 -CommanderScript download_flash.jlink
+
 
 #######################################
 # clean up
