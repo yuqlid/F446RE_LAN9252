@@ -1,0 +1,37 @@
+{
+    // IntelliSense を使用して利用可能な属性を学べます。
+    // 既存の属性の説明をホバーして表示します。
+    // 詳細情報は次を確認してください: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "cwd": "${workspaceRoot}",
+            "executable": "./build/F446RE_LAN9252.elf",
+            "name": "Debug(OpenOCD)",
+            "request": "launch",
+            "rtos": "FreeRTOS",
+            "type": "cortex-debug",
+            "device": "STM32F446RE",
+            "servertype": "openocd",
+            "interface": "swd",
+            "svdFile": "STM32F446x.svd",
+            "runToMain": false,
+            "configFiles":[
+                "board/st_nucleo_f4.cfg"
+            ]
+        },
+        {
+            "name": "Debug(J-Link)",
+            "cwd": "${workspaceRoot}",
+            "executable": "./build/F446RE_LAN9252.elf",
+            "request": "launch",
+            "type": "cortex-debug",
+            "servertype": "jlink",
+            "device": "STM32F446RE",
+            "rtos": "FreeRTOS",
+            "interface": "jtag",
+            "svdFile": "STM32F446x.svd",
+            "runToMain": true,
+        }
+    ]
+}

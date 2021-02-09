@@ -26,7 +26,9 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-
+#include <stdio.h>
+#include <stdint.h>
+#include "xprintf.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -36,6 +38,15 @@
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
+#ifdef __GNUC__
+#define PUTCHAR_PROTOTYPE int __io_putchar(int ch)
+#else
+#define PUTCHAR_PROTOTYPE int fputc(int ch, FILE *f)
+#endif /* __GNUC__ */
+
+void __io_putchar(uint8_t ch) {
+  HAL_UART_Transmit(&huart2, &ch, 1, 1);
+}
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
@@ -92,7 +103,13 @@ int main(void)
   MX_USART2_UART_Init();
   MX_SPI3_Init();
   /* USER CODE BEGIN 2 */
+  
+  // Use xprintf as UART Output
+   xdev_out(__io_putchar);
 
+  setbuf(stdout, NULL);
+  xprintf("\r\n%s,%s\r\n",__DATE__,__TIME__);
+  xprintf("F446RE\r\n");
   /* USER CODE END 2 */
 
   /* Init scheduler */
