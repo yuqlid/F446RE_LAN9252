@@ -116,12 +116,14 @@ void StartDefaultTask(void *argument)
 {
   /* USER CODE BEGIN StartDefaultTask */
   static uint16_t data = 0;
+  static float dataf = 0.0f;
   /* Infinite loop */
   for(;;)
   {
     osDelay(100);
     HAL_GPIO_TogglePin(LD2_GPIO_Port, LD2_Pin);
-    xprintf("hello %d\r\n",data++);
+    xprintf("hello %5d, %3.1f\r\n",data++, dataf);
+    dataf += 0.1f;
   }
   /* USER CODE END StartDefaultTask */
 }
