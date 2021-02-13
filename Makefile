@@ -138,7 +138,9 @@ C_INCLUDES =  \
 -IMiddlewares/Third_Party/FreeRTOS/Source/include \
 -IMiddlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS_V2 \
 -IMiddlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM4F \
--Ixprintf/src
+-Ixprintf/src \
+-ISOES/soes \
+-ISOES/soes/include/sys/gcc
 
 
 # float option

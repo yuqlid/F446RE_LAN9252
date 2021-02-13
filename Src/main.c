@@ -29,6 +29,8 @@
 #include <stdio.h>
 #include <stdint.h>
 #include "xprintf.h"
+
+#include "ecat_slv.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -110,6 +112,26 @@ int main(void)
   setbuf(stdout, NULL);
   xprintf("\r\n%s,%s\r\n",__DATE__,__TIME__);
   xprintf("F446RE\r\n");
+
+  static esc_cfg_t config =						//just add
+  {
+     .user_arg = "/dev/lan9252",
+     .use_interrupt = 0,
+     .watchdog_cnt = 65000,
+     .set_defaults_hook = NULL,
+     .pre_state_change_hook = NULL,
+     .post_state_change_hook = NULL,
+     .application_hook = NULL,
+     .safeoutput_override = NULL,
+     .pre_object_download_hook = NULL,
+     .post_object_download_hook = NULL,
+     .rxpdo_override = NULL,
+     .txpdo_override = NULL,
+     .esc_hw_interrupt_enable = NULL,
+     .esc_hw_interrupt_disable = NULL,
+     .esc_hw_eep_handler = NULL,
+     .esc_check_dc_handler = NULL,
+  };
   /* USER CODE END 2 */
 
   /* Init scheduler */
