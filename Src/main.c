@@ -31,6 +31,7 @@
 #include "xprintf.h"
 
 #include "ecat_slv.h"
+#include "utypes.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -59,7 +60,8 @@ void __io_putchar(uint8_t ch) {
 /* Private variables ---------------------------------------------------------*/
 
 /* USER CODE BEGIN PV */
-
+  /* Application variables */
+  _Objects    Obj;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -113,7 +115,7 @@ int main(void)
   xprintf("\r\n%s,%s\r\n",__DATE__,__TIME__);
   xprintf("F446RE\r\n");
 
-  static esc_cfg_t config =						//just add
+  static esc_cfg_t config =
   {
      .user_arg = "/dev/lan9252",
      .use_interrupt = 0,
@@ -132,6 +134,8 @@ int main(void)
      .esc_hw_eep_handler = NULL,
      .esc_check_dc_handler = NULL,
   };
+
+  ecat_slv_init(&config);
   /* USER CODE END 2 */
 
   /* Init scheduler */

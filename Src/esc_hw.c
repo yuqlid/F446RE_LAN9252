@@ -12,9 +12,11 @@
  */
 
 #include "esc.h"
-#include <spi/spi.h>
+#include "spi.h"
 #include <string.h>
-#include <gpio.h>
+//#include <gpio.h>
+
+#define BIT(x)	1 << (x)
 
 #define ESC_CMD_SERIAL_WRITE     0x02
 #define ESC_CMD_SERIAL_READ      0x03
@@ -392,8 +394,8 @@ void ESC_reset (void)
 void ESC_init (const esc_cfg_t * config)
 {
    uint32_t value;
-   const char * spi_name = (char *)config->user_arg;
-   lan9252 = open (spi_name, O_RDWR, 0);
+   //const char * spi_name = (char *)config->user_arg;
+   //lan9252 = open (spi_name, O_RDWR, 0);
 
    /* Reset the ecat core here due to evb-lan9252-digio not having any GPIO
     * for that purpose.
@@ -403,7 +405,5 @@ void ESC_init (const esc_cfg_t * config)
    {
       value = lan9252_read_32(ESC_CSR_CMD_REG);
    } while(value & ESC_RESET_CTRL_RST);
-
-
 
 }

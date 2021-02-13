@@ -34,13 +34,17 @@ extern "C" {
 extern SPI_HandleTypeDef hspi3;
 
 /* USER CODE BEGIN Private defines */
-
+#define tout 1000
 /* USER CODE END Private defines */
 
 void MX_SPI3_Init(void);
 
 /* USER CODE BEGIN Prototypes */
 
+void spi_select (int8_t board);
+void spi_unselect (int8_t board);
+void write (int8_t board, uint8_t *data, uint8_t size);
+void read (int8_t board, uint8_t *result, uint8_t size);
 /* USER CODE END Prototypes */
 
 #ifdef __cplusplus
