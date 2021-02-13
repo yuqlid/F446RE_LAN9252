@@ -1,0 +1,3 @@
+[submodule "SOES"]
+	path = SOES
+	url = git@github.com:OpenEtherCATsociety/SOES.git
