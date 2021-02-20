@@ -147,15 +147,17 @@ int main(void)
   volatile uint32_t value = 0;
 
   do{
-
-    value = lan9252_read_32(0x0064);
+    value = lan9252_read_32(ESC_BYTE_TEST_REG);
     HAL_Delay(10);
     HAL_GPIO_TogglePin(LD2_GPIO_Port, LD2_Pin);
-  }while(value != 0x87654321);
+  }while(value != BYTE_TEST);
   
+  value = lan9252_read_32(ESC_ID_REV_REG);
+  xprintf("Chip ID : %x\n",value>>16);
+  xprintf("Chip Rev: %d\n",value&0xFFFF);
 
   ecat_slv_init(&config);
-  DPRINT("Hello Main\n");
+  xprintf("Hello Main\n");
   /* USER CODE END 2 */
 
   /* Init scheduler */

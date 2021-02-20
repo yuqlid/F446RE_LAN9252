@@ -14,6 +14,11 @@
 /* Standard includes. */
 #include <stdint.h>
 
+#define ESC_ID_REV_REG  0x050
+#define ESC_BYTE_TEST_REG  0x064
+
+#define BYTE_TEST   0x87654321
+
 void lan9252_Reset_assert(void);
 void lan9252_Reset_negate(void);
 
