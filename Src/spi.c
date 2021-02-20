@@ -106,23 +106,6 @@ void HAL_SPI_MspDeInit(SPI_HandleTypeDef* spiHandle)
 
 /* USER CODE BEGIN 1 */
 
-void spi_select (int8_t board){
-	HAL_GPIO_WritePin(GPIOD, GPIO_PIN_1, GPIO_PIN_RESET);
-}
-
-void spi_unselect (int8_t board){
-	HAL_GPIO_WritePin(GPIOD, GPIO_PIN_2, GPIO_PIN_SET);
-}
-
-void write (int8_t board, uint8_t *data, uint8_t size){
-	HAL_SPI_Transmit(&hspi3, data, size, tout);
-}
-
-void read (int8_t board, uint8_t *result, uint8_t size){
-	HAL_SPI_Receive(&hspi3, result, size, tout);
-}
-
-
 /* USER CODE END 1 */
 
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

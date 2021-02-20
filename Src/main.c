@@ -30,6 +30,7 @@
 #include <stdint.h>
 #include "xprintf.h"
 
+#include "esc_hw.h"
 #include "ecat_slv.h"
 #include "utypes.h"
 /* USER CODE END Includes */
@@ -107,6 +108,14 @@ int main(void)
   MX_USART2_UART_Init();
   MX_SPI3_Init();
   /* USER CODE BEGIN 2 */
+  spi_select(1);
+  lan9252_Reset_negate();
+  lan9252_Reset_assert();
+  HAL_Delay(1);
+  lan9252_Reset_negate();
+  spi_unselect(1);
+
+  HAL_Delay(50);
   
   // Use xprintf as UART Output
    xdev_out(__io_putchar);
@@ -135,7 +144,18 @@ int main(void)
      .esc_check_dc_handler = NULL,
   };
 
+  volatile uint32_t value = 0;
+
+  do{
+
+    value = lan9252_read_32(0x0064);
+    HAL_Delay(10);
+    HAL_GPIO_TogglePin(LD2_GPIO_Port, LD2_Pin);
+  }while(value != 0x87654321);
+  
+
   ecat_slv_init(&config);
+  DPRINT("Hello Main\n");
   /* USER CODE END 2 */
 
   /* Init scheduler */

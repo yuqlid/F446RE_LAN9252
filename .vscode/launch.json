@@ -7,7 +7,7 @@
         {
             "cwd": "${workspaceRoot}",
             "executable": "./build/F446RE_LAN9252.elf",
-            "name": "Debug(OpenOCD)",
+            "name": "Debug(OpenOCD)_FreeRTOS",
             "request": "launch",
             "rtos": "FreeRTOS",
             "type": "cortex-debug",
@@ -16,6 +16,21 @@
             "interface": "swd",
             "svdFile": "STM32F446x.svd",
             "runToMain": false,
+            "configFiles":[
+                "board/st_nucleo_f4.cfg"
+            ]
+        },
+        {
+            "cwd": "${workspaceRoot}",
+            "executable": "./build/F446RE_LAN9252.elf",
+            "name": "Debug(OpenOCD)",
+            "request": "launch",
+            "type": "cortex-debug",
+            "device": "STM32F446RE",
+            "servertype": "openocd",
+            "interface": "swd",
+            "svdFile": "STM32F446x.svd",
+            "runToMain": true,
             "configFiles":[
                 "board/st_nucleo_f4.cfg"
             ]

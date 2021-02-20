@@ -12,9 +12,10 @@
  */
 
 #include "esc.h"
-#include "spi.h"
+#include "esc_hw.h"
 #include <string.h>
-//#include <gpio.h>
+#include "spi.h"
+#include "gpio.h"
 
 #define BIT(x)	1 << (x)
 
@@ -53,10 +54,42 @@
 #define ESC_RESET_CTRL_REG       0x1F8
 #define ESC_RESET_CTRL_RST       BIT(6)
 
+#define tout 1
+
 static int lan9252 = -1;
 
+#define LAN9252_RST_GPIO_Port GPIOC
+#define LAN9252_RST_Pin GPIO_PIN_8
+#define LAN9252_CS_GPIO_Port GPIOD
+#define LAN9252_CS_Pin GPIO_PIN_2
+
+
+void lan9252_Reset_assert(void){
+   HAL_GPIO_WritePin(LAN9252_RST_GPIO_Port, LAN9252_RST_Pin, GPIO_PIN_RESET);
+}
+
+void lan9252_Reset_negate(void){
+   HAL_GPIO_WritePin(LAN9252_RST_GPIO_Port, LAN9252_RST_Pin, GPIO_PIN_SET);
+}
+
+void spi_select (int8_t board){
+	HAL_GPIO_WritePin(LAN9252_CS_GPIO_Port, LAN9252_CS_Pin, GPIO_PIN_RESET);
+}
+
+void spi_unselect (int8_t board){
+	HAL_GPIO_WritePin(LAN9252_CS_GPIO_Port, LAN9252_CS_Pin, GPIO_PIN_SET);
+}
+
+void write (int8_t board, uint8_t *data, uint8_t size){
+	HAL_SPI_Transmit(&hspi3, data, size, tout);
+}
+
+void read (int8_t board, uint8_t *result, uint8_t size){
+	HAL_SPI_Receive(&hspi3, result, size, tout);
+}
+
 /* lan9252 singel write */
-static void lan9252_write_32 (uint16_t address, uint32_t val)
+void lan9252_write_32 (uint16_t address, uint32_t val)
 {
     uint8_t data[7];
 
@@ -77,10 +110,10 @@ static void lan9252_write_32 (uint16_t address, uint32_t val)
 }
 
 /* lan9252 single read */
-static uint32_t lan9252_read_32 (uint32_t address)
+uint32_t lan9252_read_32 (uint32_t address)
 {
    uint8_t data[4];
-   uint8_t result[4];
+   uint8_t result[4] = {0};
 
    data[0] = ESC_CMD_FAST_READ;
    data[1] = ((address >> 8) & 0xFF);

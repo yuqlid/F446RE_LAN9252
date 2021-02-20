@@ -120,7 +120,7 @@ void StartDefaultTask(void *argument)
   /* Infinite loop */
   for(;;)
   {
-    osDelay(100);
+    osDelay(200);
     HAL_GPIO_TogglePin(LD2_GPIO_Port, LD2_Pin);
     xprintf("hello %5d, %3.1f\r\n",data++, dataf);
     dataf += 0.1f;
