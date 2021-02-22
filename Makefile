@@ -222,13 +222,13 @@ $(BUILD_DIR):
 #######################################
 # Program OpenOCD
 #######################################
-upload: build/$(TARGET).bin
+upload_open: build/$(TARGET).bin
 	openocd -f board/st_nucleo_f4.cfg -c "reset_config trst_only combined" -c "program build/$(TARGET).elf verify reset exit"
 
 #######################################
 # Program J-Link
 #######################################
-upload_jlink: build/$(TARGET).bin
+upload: build/$(TARGET).bin
 	JLink -device STM32F446RE -if SWD -speed 4000 -autoconnect 1 -CommanderScript download_flash.jlink
 
 
