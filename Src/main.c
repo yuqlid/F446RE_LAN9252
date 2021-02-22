@@ -109,10 +109,7 @@ int main(void)
   MX_SPI3_Init();
   /* USER CODE BEGIN 2 */
   spi_select(1);
-  lan9252_Reset_negate();
-  lan9252_Reset_assert();
-  HAL_Delay(1);
-  lan9252_Reset_negate();
+  ESC_reset();
   spi_unselect(1);
 
   HAL_Delay(50);
@@ -153,8 +150,27 @@ int main(void)
   }while(value != BYTE_TEST);
   
   value = lan9252_read_32(ESC_ID_REV_REG);
-  xprintf("Chip ID : %x\n",value>>16);
-  xprintf("Chip Rev: %d\n",value&0xFFFF);
+  xprintf("Chip ID : %x\n", value >> 16);
+  xprintf("Chip Rev: %d\n", value & 0xFFFF);
+
+  ESC_read(0xE08, &value, 4);
+  xprintf("VenderID: %04X\n", value);
+
+  ESC_read(0xE00, &value, 4);
+  xprintf("ProductID: %04X\n", value);
+
+  ESC_read(0x000, &value8, 1);
+  xprintf("Controller: %04X\n", value8);
+
+  ESC_read(0x001, &value16, 2);
+  xprintf("Revision: %04X\n", value16);
+
+  ESC_read(0x004, &value8, 1);
+  xprintf("FMMU: %X\n", value8);
+
+  ESC_read(0x005, &value8, 1);
+  xprintf("SyncManager: %X\n", value8);
+
 
   ecat_slv_init(&config);
   xprintf("Hello Main\n");

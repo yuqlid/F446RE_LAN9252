@@ -421,7 +421,9 @@ void ESC_write (uint16_t address, void *buf, uint16_t len)
  */
 void ESC_reset (void)
 {
-
+   lan9252_Reset_assert();
+   HAL_Delay(1);
+   lan9252_Reset_negate();
 }
 
 void ESC_init (const esc_cfg_t * config)
