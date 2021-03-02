@@ -77,6 +77,7 @@ FreeRTOS-openocd.c \
 Src/esc_hw.c \
 Src/slave_objectlist.c \
 SOES/soes/esc_coe.c \
+SOES/soes/esc_foe.c \
 SOES/soes/esc.c \
 SOES/soes/ecat_slv.c
 

@@ -26,6 +26,7 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
+#include "ecat_slv.h"
 #include "xprintf.h"
 /* USER CODE END Includes */
 
@@ -120,10 +121,14 @@ void StartDefaultTask(void *argument)
   /* Infinite loop */
   for(;;)
   {
+    /*
     osDelay(200);
     HAL_GPIO_TogglePin(LD2_GPIO_Port, LD2_Pin);
     xprintf("hello %5d, %3.1f\r\n",data++, dataf);
     dataf += 0.1f;
+    */
+    ecat_slv();
+    //osDelay(200);
   }
   /* USER CODE END StartDefaultTask */
 }

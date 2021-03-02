@@ -74,7 +74,25 @@ void MX_FREERTOS_Init(void);
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
+void cb_get_inputs (void)
+{
+		
+    if(HAL_GPIO_ReadPin(B1_GPIO_Port, B1_Pin)){
+      Obj.Buttons.Button1 = 255;
+    }else{
+      Obj.Buttons.Button1 = 0;
+    }
+}
 
+void cb_set_outputs (void)
+{
+  if (Obj.LEDs.LED0== 1) {
+		HAL_GPIO_WritePin(LD2_GPIO_Port, LD2_Pin, GPIO_PIN_SET);
+	}
+	else {
+		HAL_GPIO_WritePin(LD2_GPIO_Port, LD2_Pin, GPIO_PIN_RESET);
+	}
+}
 /* USER CODE END 0 */
 
 /**
@@ -142,6 +160,8 @@ int main(void)
   };
 
   volatile uint32_t value = 0;
+  volatile uint16_t value16 = 0;
+  volatile uint8_t value8 = 0;
 
   do{
     value = lan9252_read_32(ESC_BYTE_TEST_REG);

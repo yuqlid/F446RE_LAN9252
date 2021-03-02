@@ -41,4 +41,5 @@
 #define MAX_MAPPINGS_SM2 2
 #define MAX_MAPPINGS_SM3 1
 
+#define  ESC_DEBUG      1
 #endif /* __ECAT_OPTIONS_H__ */

@@ -54,7 +54,7 @@
 #define ESC_RESET_CTRL_REG       0x1F8
 #define ESC_RESET_CTRL_RST       BIT(6)
 
-#define tout 1
+#define tout 100
 
 static int lan9252 = -1;
 
