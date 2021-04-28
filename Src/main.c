@@ -87,10 +87,10 @@ void cb_get_inputs (void)
 void cb_set_outputs (void)
 {
   if (Obj.LEDs.LED0== 1) {
-		HAL_GPIO_WritePin(LD2_GPIO_Port, LD2_Pin, GPIO_PIN_SET);
+
 	}
 	else {
-		HAL_GPIO_WritePin(LD2_GPIO_Port, LD2_Pin, GPIO_PIN_RESET);
+
 	}
 }
 /* USER CODE END 0 */
@@ -124,7 +124,7 @@ int main(void)
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
   MX_USART2_UART_Init();
-  MX_SPI3_Init();
+  MX_SPI1_Init();
   /* USER CODE BEGIN 2 */
   spi_select(1);
   ESC_reset();
@@ -166,7 +166,6 @@ int main(void)
   do{
     value = lan9252_read_32(ESC_BYTE_TEST_REG);
     HAL_Delay(10);
-    HAL_GPIO_TogglePin(LD2_GPIO_Port, LD2_Pin);
   }while(value != BYTE_TEST);
   
   value = lan9252_read_32(ESC_ID_REV_REG);

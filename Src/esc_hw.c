@@ -60,8 +60,8 @@ static int lan9252 = -1;
 
 #define LAN9252_RST_GPIO_Port GPIOC
 #define LAN9252_RST_Pin GPIO_PIN_8
-#define LAN9252_CS_GPIO_Port GPIOD
-#define LAN9252_CS_Pin GPIO_PIN_2
+#define LAN9252_CS_GPIO_Port GPIOB
+#define LAN9252_CS_Pin GPIO_PIN_6
 
 
 void lan9252_Reset_assert(void){
@@ -81,11 +81,11 @@ void spi_unselect (int8_t board){
 }
 
 void write (int8_t board, uint8_t *data, uint8_t size){
-	HAL_SPI_Transmit(&hspi3, data, size, tout);
+	HAL_SPI_Transmit(&hspi1, data, size, tout);
 }
 
 void read (int8_t board, uint8_t *result, uint8_t size){
-	HAL_SPI_Receive(&hspi3, result, size, tout);
+	HAL_SPI_Receive(&hspi1, result, size, tout);
 }
 
 /* lan9252 singel write */
