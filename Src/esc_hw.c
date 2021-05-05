@@ -112,14 +112,13 @@ void lan9252_write_32 (uint16_t address, uint32_t val)
 /* lan9252 single read */
 uint32_t lan9252_read_32 (uint32_t address)
 {
-   uint8_t data[5];
+   uint8_t data[4];
    uint8_t result[4] = {0};
 
    data[0] = ESC_CMD_FAST_READ;
    data[1] = ((address >> 8) & 0xFF);
    data[2] = (address & 0xFF);
-   data[3] = 4;
-   data[4] = 0;
+   data[3] = ESC_CMD_FAST_READ_DUMMY;
 
    /* Select device. */
    spi_select (lan9252);
