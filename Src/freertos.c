@@ -26,11 +26,14 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
+#include "esc_hw.h"
 #include "ecat_slv.h"
+#include "utypes.h"
 #include "xprintf.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
+typedef StaticTask_t osStaticThreadDef_t;
 /* USER CODE BEGIN PTD */
 
 /* USER CODE END PTD */
@@ -51,9 +54,26 @@
 /* USER CODE END Variables */
 /* Definitions for defaultTask */
 osThreadId_t defaultTaskHandle;
+uint32_t defaultTaskBuffer[ 128 ];
+osStaticThreadDef_t defaultTaskControlBlock;
 const osThreadAttr_t defaultTask_attributes = {
   .name = "defaultTask",
-  .stack_size = 128 * 4,
+  .cb_mem = &defaultTaskControlBlock,
+  .cb_size = sizeof(defaultTaskControlBlock),
+  .stack_mem = &defaultTaskBuffer[0],
+  .stack_size = sizeof(defaultTaskBuffer),
+  .priority = (osPriority_t) osPriorityNormal,
+};
+/* Definitions for soes */
+osThreadId_t soesHandle;
+uint32_t soesBuffer[ 1024 ];
+osStaticThreadDef_t soesControlBlock;
+const osThreadAttr_t soes_attributes = {
+  .name = "soes",
+  .cb_mem = &soesControlBlock,
+  .cb_size = sizeof(soesControlBlock),
+  .stack_mem = &soesBuffer[0],
+  .stack_size = sizeof(soesBuffer),
   .priority = (osPriority_t) osPriorityNormal,
 };
 
@@ -63,6 +83,7 @@ const osThreadAttr_t defaultTask_attributes = {
 /* USER CODE END FunctionPrototypes */
 
 void StartDefaultTask(void *argument);
+void soesTask(void *argument);
 
 void MX_FREERTOS_Init(void); /* (MISRA C 2004 rule 8.1) */
 
@@ -96,6 +117,9 @@ void MX_FREERTOS_Init(void) {
   /* creation of defaultTask */
   defaultTaskHandle = osThreadNew(StartDefaultTask, NULL, &defaultTask_attributes);
 
+  /* creation of soes */
+  soesHandle = osThreadNew(soesTask, NULL, &soes_attributes);
+
   /* USER CODE BEGIN RTOS_THREADS */
   /* add threads, ... */
   /* USER CODE END RTOS_THREADS */
@@ -127,10 +151,86 @@ void StartDefaultTask(void *argument)
     xprintf("hello %5d, %3.1f\r\n",data++, dataf);
     dataf += 0.1f;
     */
-    ecat_slv();
-    //osDelay(200);
+    osDelay(1);
   }
   /* USER CODE END StartDefaultTask */
+}
+
+/* USER CODE BEGIN Header_soesTask */
+/**
+* @brief Function implementing the soes thread.
+* @param argument: Not used
+* @retval None
+*/
+/* USER CODE END Header_soesTask */
+void soesTask(void *argument)
+{
+  /* USER CODE BEGIN soesTask */
+
+  static esc_cfg_t config =
+  {
+     .user_arg = "/dev/lan9252",
+     .use_interrupt = 0,
+     .watchdog_cnt = 65000,
+     .set_defaults_hook = NULL,
+     .pre_state_change_hook = NULL,
+     .post_state_change_hook = NULL,
+     .application_hook = NULL,
+     .safeoutput_override = NULL,
+     .pre_object_download_hook = NULL,
+     .post_object_download_hook = NULL,
+     .rxpdo_override = NULL,
+     .txpdo_override = NULL,
+     .esc_hw_interrupt_enable = NULL,
+     .esc_hw_interrupt_disable = NULL,
+     .esc_hw_eep_handler = NULL,
+     .esc_check_dc_handler = NULL,
+  };
+
+  volatile uint32_t value = 0;
+  volatile uint16_t value16 = 0;
+  volatile uint8_t value8 = 0;
+
+  spi_select(1);
+  ESC_reset();
+  spi_unselect(1);
+
+  do{
+    value = lan9252_read_32(ESC_BYTE_TEST_REG);
+    osDelay(10);
+  }while(value != BYTE_TEST);
+
+  value = lan9252_read_32(ESC_ID_REV_REG);
+  xprintf("Chip ID : %x\n", value >> 16);
+  xprintf("Chip Rev: %d\n", value & 0xFFFF);
+
+  ESC_read(0xE08, &value, 4);
+  xprintf("VenderID: %04X\n", value);
+
+  ESC_read(0xE00, &value, 4);
+  xprintf("ProductID: %04X\n", value);
+
+  ESC_read(0x000, &value8, 1);
+  xprintf("Controller: %04X\n", value8);
+
+  ESC_read(0x001, &value16, 2);
+  xprintf("Revision: %04X\n", value16);
+
+  ESC_read(0x004, &value8, 1);
+  xprintf("FMMU: %X\n", value8);
+
+  ESC_read(0x005, &value8, 1);
+  xprintf("SyncManager: %X\n", value8);
+
+
+  ecat_slv_init(&config);
+  /* Infinite loop */
+  for(;;)
+  {
+    //osDelay(1);
+    ecat_slv();
+  }
+  /* USER CODE END soesTask */
 }
 
 /* Private application code --------------------------------------------------*/

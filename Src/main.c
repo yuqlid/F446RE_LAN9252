@@ -30,7 +30,6 @@
 #include <stdint.h>
 #include "xprintf.h"
 
-#include "esc_hw.h"
 #include "ecat_slv.h"
 #include "utypes.h"
 /* USER CODE END Includes */
@@ -126,9 +125,6 @@ int main(void)
   MX_USART2_UART_Init();
   MX_SPI1_Init();
   /* USER CODE BEGIN 2 */
-  spi_select(1);
-  ESC_reset();
-  spi_unselect(1);
 
   HAL_Delay(50);
   
@@ -139,59 +135,6 @@ int main(void)
   xprintf("\r\n%s,%s\r\n",__DATE__,__TIME__);
   xprintf("F446RE\r\n");
 
-  static esc_cfg_t config =
-  {
-     .user_arg = "/dev/lan9252",
-     .use_interrupt = 0,
-     .watchdog_cnt = 65000,
-     .set_defaults_hook = NULL,
-     .pre_state_change_hook = NULL,
-     .post_state_change_hook = NULL,
-     .application_hook = NULL,
-     .safeoutput_override = NULL,
-     .pre_object_download_hook = NULL,
-     .post_object_download_hook = NULL,
-     .rxpdo_override = NULL,
-     .txpdo_override = NULL,
-     .esc_hw_interrupt_enable = NULL,
-     .esc_hw_interrupt_disable = NULL,
-     .esc_hw_eep_handler = NULL,
-     .esc_check_dc_handler = NULL,
-  };
-
-  volatile uint32_t value = 0;
-  volatile uint16_t value16 = 0;
-  volatile uint8_t value8 = 0;
-
-  do{
-    value = lan9252_read_32(ESC_BYTE_TEST_REG);
-    HAL_Delay(10);
-  }while(value != BYTE_TEST);
-  
-  value = lan9252_read_32(ESC_ID_REV_REG);
-  xprintf("Chip ID : %x\n", value >> 16);
-  xprintf("Chip Rev: %d\n", value & 0xFFFF);
-
-  ESC_read(0xE08, &value, 4);
-  xprintf("VenderID: %04X\n", value);
-
-  ESC_read(0xE00, &value, 4);
-  xprintf("ProductID: %04X\n", value);
-
-  ESC_read(0x000, &value8, 1);
-  xprintf("Controller: %04X\n", value8);
-
-  ESC_read(0x001, &value16, 2);
-  xprintf("Revision: %04X\n", value16);
-
-  ESC_read(0x004, &value8, 1);
-  xprintf("FMMU: %X\n", value8);
-
-  ESC_read(0x005, &value8, 1);
-  xprintf("SyncManager: %X\n", value8);
-
-
-  ecat_slv_init(&config);
   xprintf("Hello Main\n");
   /* USER CODE END 2 */
 
